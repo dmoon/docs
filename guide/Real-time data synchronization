@@ -1,0 +1,128 @@
+라이브리 실시간 데이터 동기화
+1. 라이브리 실시간 데이터 동기화 안내
+2. 테스트 페이지 
+3. 동기화 적용 방법
+4. 전달되는 데이터 종류
+
+1. 라이브리 실시간 데이터 동기화 안내
+
+실시간 데이터 동기화란? 
+- 댓글 작성 후 자바스크립트의 함수 호출하여 함수의 파라미터에 댓글 정보에 대한 객체를 전달하는 방법으로 댓글 데이터를 동기화 하고 있습니다.
+
+데이터를 전달받기 위한 함수 제작 후 본 문서 2페이지에 있는 '동기화 적용방법'을 참고하시어 작업하시면 됩니다. 
+
+전달되는 데이터 종류는 본 문서 4페이지 '전달되는 데이터 종류'를 참고 부탁드립니다. 
+
+
+
+
+2. 테스트 페이지
+
+- 아래 페이지에서 개발자 도구(F12)실행 후 댓글 작성 시 데이터 전달형태를 확인하실 수 있습니다.
+
+
+
+
+소스보기를 통하여 적용된 소스를 확인하시면 간단하게 작업이 가능합니다.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+3. 동기화 적용방법
+
+- 데이터를 전달받으실 함수를 먼저 제작해주셔야 합니다.
+- 전달받은 데이터를 자체 DB에 insert, update 하는 페이지를 제작 후 비동기로 동기화하는 형태로 함수를 제작해주시면 됩니다.
+- 제작하신 함수를 아래 예시처럼 댓글 작성, 삭제 시마다 호출하게끔 적용하시면 됩니다.
+
+설치코드의 livereLib.start(); 코드를 아래와 같이 수정 하시면 됩니다.
+적용 함수명 : getLivereComment
+—ex) 동기화 코드 예시 —————————————————————————
+livereLib.start(function(){
+    jQuery(livereLib).bind('livereEvent', function(event, param) {
+        if (livereReply == null) return;
+        var key = param['key'];
+        var value = param['value'];
+        switch (key) {
+                            //TODO
+          case "writeDone" : //댓글등록시 이벤트명
+           if ( typeof getLivereComment === "function"){
+               getLivereComment(value);   
+           }
+           break;
+       case "replyDeleteEvent" : //댓글삭제시 이벤트명
+           if(typeof getLivereComment === 'function' ){
+               getLivereComment(value.resultData);
+           }
+           break;        }
+    });
+});
+
+
+
+
+
+
+
+
+
+
+4. 전달되는 데이터 형태
+
+컬럼명	설명	DB데이터타입 예시
+consumer_seq	라이브리 설치코드 발급시 
+제공된 고유 Seq	Int형 (10)
+livere_seq		
+site	댓글 위치이며 라이브리 설치코드 내 refer값	Varchar형 (500)
+title	댓글작성된 게시글 제목으로 
+라이브리 설치코드내 title값	Varchar형 (200)
+name	댓글 작성한 유저의 SNS계정 이름	Varchar형 (50)
+member_domain	댓글 작성시 사용한 대표SNS 종류	Varchar형 (50)
+member_id	댓글 작성시 사용한 대표SNS 유저ID값	Varchar형 (100)
+member_icon	댓글 작성시 사용한 유저의 프로필 이미지 경로	Varchar형 (600)
+member_url	댓글 작성시 사용한 유저의 SNS 타임라인 URL	Varchar형 (100)
+member_seq	댓글 작성시 사용한 대표계정의 라이브리 고유값	Int형 (10)
+member_group_seq	댓글 작성시 사용한 계정의 라이브리 고유그룹값	Int형 (10)
+sept_sns	댓글 작성시 공유한 SNS 종류	Varchar형 (100)
+content	댓글 내용	Text형 또는 Varchar형
+reply_regdate	댓글 작성시간	Datetime형
+status	댓글 삭제여부 구분값 
+(게시 댓글 = 0 / 삭제댓글 = 0이 아닌 경우)	Int형 (10)
+agent	댓글 작성 환경	Varchar형 (500)
+parent_seq	댓댓글 구분값 ( 일반댓글: reply_seq=parent_seq /
+댓댓글: reply_seq ≠ parent_seq )	Int형 (10)
+ip_address	댓글 작성한 IP주소	Varchar형 (20)
+is_mobile	댓글 작성 환경의 PC, Mobile구분값
+(PC = 0 / Mobile = 1)	Char형 (1)
+rep_seq	댓글 작성된 게시글의	Int형 (10)
+reply_seq	댓글 고유값	Int형 (10)
+image1	
+댓글작성시 첨부한 이미지 URL	
+Varchar형 (20)
+image2		
+image3		
+info1	라이브리 별점 모듈 이용시 별점값	Varchar형 (50)
+info2	랜덤당첨모듈 사용시 당첨 경품명	Varchar형 (250)
+info3	투표모듈 사용시 선택된 투표 버튼값	Varchar형 (50)
+link1	
+첨부된 유튜브 동영상 URL	
+Varchar형 (150)
+link2		
+link3		
+
+이외 필요하신 데이터의 경우 라이브리 담당자에게 문의하시면 전달가능여부 확인 후 말씀드리겠습니다.
+설치 중 문의사항은 cs@cizion.com 으로 문의 부탁드립니다
